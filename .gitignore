@@ -1,0 +1,7 @@
+server/.gradle/
+.idea/
+server/build/
+server/out/
+client/node_modules/
+client/out/
+client/client.iml
