@@ -1,0 +1,47 @@
+{
+    "name": "client",
+    "version": "1.0.0",
+    "description": "",
+    "main": "out/src/extension.js",
+    "publisher": "TeachYourselfLsp4j",
+    "engines": {
+        "vscode": "^1.22.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onLanguage:csv"
+    ],
+    "contributes": {
+        "//": "CSVファイルを登録する",
+        "languages": [
+            {
+                "id": "csv",
+                "extensions": [
+                    ".csv"
+                ],
+                "aliases": [
+                    "CSV",
+                    "Csv",
+                    "csv"
+                ]
+            }
+        ]
+    },
+    "scripts": {
+        "compile": "tsc -p ./",
+        "update-vscode": "node ./node_modules/vscode/bin/install",
+        "launch": "code --extensionDevelopmentPath=F:/work/TeachYourselfLsp4j/client/"
+    },
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "vscode": "^1.1.18",
+        "vscode-languageclient": "^4.3.0"
+    },
+    "devDependencies": {
+        "@types/node": "^10.3.1",
+        "typescript": "^2.9.2"
+    }
+}
