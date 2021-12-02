@@ -56,7 +56,7 @@ public final class MyLanguageServer implements LanguageServer, LanguageClientAwa
 
     @Override
     public WorkspaceService getWorkspaceService() {
-        return null;
+        return new MyWorkspaceService();
     }
 
     @Override

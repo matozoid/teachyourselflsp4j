@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 public final class MyTextDocumentService implements TextDocumentService {
@@ -26,7 +25,7 @@ public final class MyTextDocumentService implements TextDocumentService {
     private static final Logger logger = LoggerFactory.getLogger( MyTextDocumentService.class );
     private static final Splitter splitter = Splitter.on( "," );
 
-    private AtomicReference<List<List<String>>> src = new AtomicReference<>( ImmutableList.of() );
+    private final AtomicReference<List<List<String>>> src = new AtomicReference<>( ImmutableList.of() );
 
     private void updateDocument( String srcUriString ) {
         try {
@@ -45,12 +44,15 @@ public final class MyTextDocumentService implements TextDocumentService {
         return CompletableFutures.computeAsync( checker -> {
             var src = this.src.get();
             var currentLineIndex = position.getPosition().getLine();
-            if ( src.size() <= currentLineIndex ) {  // ファイルの最後の新しい行はリストにいない
+            // The new line at the end of the file is not in the list.
+            // ファイルの最後の新しい行はリストにいない
+            if ( src.size() <= currentLineIndex ) {
                 return Either.forLeft( List.of() );
             }
             var currentRow = src.get( currentLineIndex );
-            var currentRowString = currentRow.stream().collect( joining( "," ) );
+            var currentRowString = String.join(",", currentRow);
             var currentRowBeforeCursor = currentRowString
+                    // Due to synchronization timing issues, the source may not have been updated.
                     // 同期タイミングの問題で、ソースが更新されていない場合もある
                     .substring( 0, Math.min( currentRowString.length(), position.getPosition().getCharacter() ) );
             var currentColumn = (int) currentRowBeforeCursor
@@ -78,17 +80,17 @@ public final class MyTextDocumentService implements TextDocumentService {
     }
 
     @Override
-    public CompletableFuture<Hover> hover( TextDocumentPositionParams position ) {
+    public CompletableFuture<Hover> hover(HoverParams params) {
         return CompletableFuture.completedFuture( null );
     }
 
     @Override
-    public CompletableFuture<SignatureHelp> signatureHelp( TextDocumentPositionParams position ) {
+    public CompletableFuture<SignatureHelp> signatureHelp(SignatureHelpParams params) {
         return CompletableFuture.completedFuture( null );
     }
 
     @Override
-    public CompletableFuture<List<? extends Location>> definition( TextDocumentPositionParams position ) {
+    public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> definition(DefinitionParams params) {
         return CompletableFuture.completedFuture( null );
     }
 
@@ -98,17 +100,12 @@ public final class MyTextDocumentService implements TextDocumentService {
     }
 
     @Override
-    public CompletableFuture<List<? extends DocumentHighlight>> documentHighlight( TextDocumentPositionParams position ) {
+    public CompletableFuture<List<? extends DocumentHighlight>> documentHighlight(DocumentHighlightParams params) {
         return CompletableFuture.completedFuture( null );
     }
 
     @Override
-    public CompletableFuture<List<? extends SymbolInformation>> documentSymbol( DocumentSymbolParams params ) {
-        return CompletableFuture.completedFuture( null );
-    }
-
-    @Override
-    public CompletableFuture<List<? extends Command>> codeAction( CodeActionParams params ) {
+    public CompletableFuture<List<Either<Command, CodeAction>>> codeAction(CodeActionParams params ) {
         return CompletableFuture.completedFuture( null );
     }
 
